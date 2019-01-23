@@ -1,0 +1,30 @@
+diff -aur gdb-8.2/gdb/jit.c gdb-8.2-changed/gdb/jit.c
+--- gdb-8.2/gdb/jit.c	2018-09-05 09:27:13.000000000 +0200
++++ gdb-8.2-changed/gdb/jit.c	2019-01-22 17:51:43.968125260 +0100
+@@ -740,8 +740,7 @@
+       new_block = (i == GLOBAL_BLOCK
+ 		   ? allocate_global_block (&objfile->objfile_obstack)
+ 		   : allocate_block (&objfile->objfile_obstack));
+-      BLOCK_DICT (new_block) = dict_create_linear (&objfile->objfile_obstack,
+-						   language, NULL);
++      BLOCK_DICT(new_block) = dict_create_linear_expandable(language);
+       BLOCK_SUPERBLOCK (new_block) = block_iter;
+       block_iter = new_block;
+ 
+@@ -773,6 +772,7 @@
+ 	  BLOCK_SUPERBLOCK (gdb_block_iter->real_block) =
+ 	    BLOCKVECTOR_BLOCK (bv, STATIC_BLOCK);
+ 	}
++	dict_add_symbol(BLOCK_DICT(BLOCKVECTOR_BLOCK(bv, GLOBAL_BLOCK)), BLOCK_FUNCTION(gdb_block_iter->real_block));
+     }
+ 
+   /* Free memory.  */
+@@ -817,6 +817,8 @@
+     }
+   add_objfile_entry (objfile, *priv_data);
+   xfree (obj);
++  // pending breakpoints might be visible now
++  breakpoint_re_set();
+ }
+ 
+ /* Try to read CODE_ENTRY using the loaded jit reader (if any).
