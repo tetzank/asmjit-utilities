@@ -21,3 +21,13 @@ Profiling steps:
 
 In `perf report` the generated function should appear with the associated name.
 The annotated view can be reached by pressing 'a'.
+
+
+## Debugging with GDB on linux
+
+The debugging capabilities of GDB for jit compiled code is very limited currently as asmjit does not generate normal object files.
+You only get debugging on assembly level within TUI mode of GDB (disassemble command does not work).
+Furthermore, to be able to set (pending) breakpoints on a jitted function, you need to patch GDB with the patch included in the gdb subdirectory.
+
+Before calling the generated function in your asmjit application, call `GDBJit::addCodeSegment()` with the function name, the function pointer and the code size (`CodeHolder::codeSize()`).
+This tells GDB about the newly generated function and, if patched, makes it possible to set breakpoints on this function.
