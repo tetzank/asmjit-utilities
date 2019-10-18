@@ -13,8 +13,6 @@
 //#include <pthread.h>
 
 
-namespace asmjit{
-
 uint64_t JitDump::getTimestamp() const{
 	timespec tp;
 	clock_gettime(CLOCK_MONOTONIC, &tp); //FIXME: error handling
@@ -120,7 +118,5 @@ void JitDump::addCodeSegment(const char *fn_name, void *fn, uint64_t code_size){
 	fwrite(fn, code_size, 1, fd);
 }
 
-
-}
 
 #endif // __linux__

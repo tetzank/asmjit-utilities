@@ -11,8 +11,6 @@
 #include <elf.h>
 
 
-namespace asmjit{
-
 #define JITDUMP_MAGIC 0x4a695444
 //#define JITDUMP_MAGIC 0x4454694a
 
@@ -120,8 +118,6 @@ public:
 	// dump function with associated function name
 	void addCodeSegment(const char *fn_name, void *fn, uint64_t code_size);
 };
-
-}
 
 #endif // __linux__
 

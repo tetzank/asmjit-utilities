@@ -40,8 +40,6 @@ struct jit_descriptor __jit_debug_descriptor = { 1, 0, 0, 0 };
 } // extern "C"
 
 
-namespace asmjit{
-
 void GDBJit::addCodeSegment(const char *name, uint64_t addr, uint64_t size){
 	puts("register_code called");
 	printf("name: %s; addr: %lu; size: %lu\n", name, addr, size);
@@ -79,5 +77,3 @@ void GDBJit::addCodeSegment(const char *name, uint64_t addr, uint64_t size){
 	puts("calling GDB");
 	__jit_debug_register_code();
 }
-
-} // namespace asmjit
