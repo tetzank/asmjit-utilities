@@ -4,11 +4,13 @@ helper classes for profiling and debugging of jitted code
 
 ## Profiling with perf on linux
 
-The profiling tool perf on linux can annotate assembly code with profiling information.
+The profiling tool perf on linux can annotate assembly code with profiling information and also map them to source code lines.
 This can be done for jit code as well if the jit runtime dumps the generated code in a special file format.
 The class `JitDump` in the subdirectory perf adds support for this file format.
 
-Usage in application:
+Mapping instructions back to source code lines only works for `asmjit::x86::Assembler` at the moment.
+
+Usage in application, see examples/sum.cpp:
 - create `JitDump` object right after `JitRuntime` and call `init()` method
 - when assembling a function get the code size from `CodeHolder::codeSize()`
 - before calling function, dump it with `addCodeSegment(name, function_ptr, code_size)`
