@@ -55,7 +55,49 @@ void JitDump::close(){
 	fclose(fd);
 }
 
+void JitDump::addDebugLine(size_t offset, const char *file_name, int line_number){
+	debugEntries.emplace_back(offset, file_name, line_number);
+}
+
 void JitDump::addCodeSegment(const char *fn_name, void *fn, uint64_t code_size){
+	// debug_info record before code_load record
+	if(!debugEntries.empty()){
+		// calculate total size
+		uint32_t totalSize = uint32_t(sizeof(record_header) + sizeof(record_debug));
+		for(const auto &e : debugEntries){
+			totalSize += uint32_t(sizeof(debug_entry) + strlen(e.file) + 1);
+		}
+		printf("total debug size: %u (0x%x)\n", totalSize, totalSize);
+
+		record_header rh;
+		rh.id = JIT_CODE_DEBUG_INFO;
+		rh.total_size = totalSize;
+		rh.timestamp = getTimestamp();
+
+		uint64_t base_addr = (uint64_t)fn;
+		record_debug rdbg;
+		rdbg.code_addr = base_addr;
+		rdbg.nr_entry = debugEntries.size();
+
+		fwrite(&rh, sizeof(record_header), 1, fd);
+		fwrite(&rdbg, sizeof(record_debug), 1, fd);
+
+		debug_entry de;
+		de.discrim = 0;
+		for(const auto &e : debugEntries){
+			// *.so files created from jit dump contain elf header of size 0x40
+			// adjust for that
+			de.code_addr = base_addr + 0x40 + e.offset;
+			de.line = e.line;
+			// write
+			fwrite(&de, sizeof(debug_entry), 1, fd);
+			fwrite(e.file, strlen(e.file)+1, 1, fd);
+		}
+	}
+	// done for this function, clear for next
+	debugEntries.clear();
+
+	// code_load record
 	size_t name_len = strlen(fn_name);
 	record_header rh;
 	rh.id = JIT_CODE_LOAD;

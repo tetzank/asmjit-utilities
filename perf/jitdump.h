@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <cstdint>
+#include <vector>
 
 #include <elf.h>
 
@@ -18,8 +19,7 @@ namespace asmjit{
 struct header{
 	// "JiTD"
 	uint32_t magic = JITDUMP_MAGIC; //FIXME: change if architecture is big-endian
-	// 2
-	uint32_t version = 1; //FIXME: spec says 2???
+	uint32_t version = 1;
 	// size in bytes of file header //FIXME: header is fixed-size, what is this?
 	uint32_t total_size;
 	// ELF architecture encoding, see /usr/include/elf.h, x86_64 == EM_X86_64
@@ -72,6 +72,24 @@ struct record_load{
 	// native code
 };
 
+struct record_debug{
+	// address of function for which debug info in provided
+	uint64_t code_addr;
+	// number of debug entries
+	uint64_t nr_entry;
+	// array of debug_entry
+	//debug_entry[n]
+};
+struct debug_entry{
+	uint64_t code_addr;
+	// source line
+	uint32_t line;
+	// column discriminator
+	uint32_t discrim;
+	// source file name, null-terminated
+	//char name[n];
+};
+
 //TODO: other record types
 
 
@@ -82,12 +100,23 @@ private:
 	void *marker;
 	long page_size;
 
+	struct debugInfo{
+		size_t offset;
+		const char *file;
+		int line;
+
+		debugInfo(size_t offset, const char *file, int line) : offset(offset), file(file), line(line) {}
+	};
+	std::vector<debugInfo> debugEntries;
+
 	uint64_t getTimestamp() const;
 
 public:
 	int init();
 	void close();
 
+	// add source line information
+	void addDebugLine(size_t offset, const char *file_name=__builtin_FILE(), int line_number=__builtin_LINE());
 	// dump function with associated function name
 	void addCodeSegment(const char *fn_name, void *fn, uint64_t code_size);
 };
