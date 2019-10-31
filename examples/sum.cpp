@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <chrono>
 #include <vector>
 #include <numeric>
 
@@ -7,14 +6,18 @@
 #include "../perf/jitdump.h"
 
 
-// example for profiling with perf
-// see README.md for profiling steps
+// AsmJit Assembler example for profiling with perf
+// 
+// profiling steps:
+// $ perf record -k 1 ./sum
+// $ perf inject -j -i perf.data -o perf.data.jitted
+// $ perf report -i perf.data.jitted
+//
+// look for the function "foo" and press "a" to view annotated assembly
 
 int main(){
-	auto start = std::chrono::high_resolution_clock::now();
-
 	// function signature
-	typedef int (*SumFunc)(const int *arr, size_t cnt);
+	using SumFunc = int (*)(const int *arr, size_t cnt);
 
 	// init asmjit
 	asmjit::JitRuntime rt;
@@ -54,10 +57,6 @@ int main(){
 		fprintf(stderr, "runtime add failed with CodeCompiler\n");
 		std::exit(1);
 	}
-
-	auto end = std::chrono::high_resolution_clock::now();
-	auto time = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	printf("compilation: %lu us\n", time);
 
 	jd.addCodeSegment("foo", (void*)fn, code.codeSize());
 
