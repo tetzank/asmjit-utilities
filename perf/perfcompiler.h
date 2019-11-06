@@ -17,9 +17,15 @@ private:
 	};
 	std::vector<DebugLine> debugLines;
 
+	JitDump jd;
+
 public:
-	explicit PerfCompiler(asmjit::CodeHolder *code) noexcept : asmjit::x86::Compiler(code) {}
-	virtual ~PerfCompiler() {}
+	explicit PerfCompiler(asmjit::CodeHolder *code) noexcept : asmjit::x86::Compiler(code) {
+		jd.init();
+	}
+	virtual ~PerfCompiler() {
+		jd.close();
+	}
 
 	// implicitly attached to latest node
 	void attachDebugLine(const char *file_name=__builtin_FILE(), int line_number=__builtin_LINE()){
@@ -28,7 +34,11 @@ public:
 		cursor()->setUserDataAsUInt64(debugLines.size());
 	}
 
-	asmjit::Error finalize(JitDump &jd){
+	void addCodeSegment(const char *fn_name, void *fn, uint64_t code_size){
+		jd.addCodeSegment(fn_name, fn, code_size);
+	}
+
+	asmjit::Error finalize(){
 		asmjit::Error err = runPasses();
 		if(err) return err;
 		
