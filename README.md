@@ -8,7 +8,8 @@ The profiling tool perf on linux can annotate assembly code with profiling infor
 This can be done for jit code as well if the jit runtime dumps the generated code in a special file format.
 The class `JitDump` in the subdirectory perf adds support for this file format.
 
-Mapping instructions back to source code lines only works for `asmjit::x86::Assembler` at the moment.
+Instructions can be mapped back to source files and line numbers which helps understanding the profile data.
+The two example programs in the examples/ subdirectory illustrate how to use it with `asmjit::x86::Assembler` in sum.cpp, and `PerfCompiler` which is drop-in replacement for `asmjit::x86::Compiler` in sumCompiler.cpp.
 
 Usage in application, see examples/sum.cpp:
 - create `JitDump` object right after `JitRuntime` and call `init()` method
