@@ -15,9 +15,16 @@ find_library(ASMJIT_LIBRARIES
 )
 include_directories(${ASMJIT_INCLUDE_DIR})
 
+# for profiling with perf
+include_directories(../perf/)
+find_library(ASMJIT_PERF_LIBRARIES
+	asmjit_perf
+	HINTS ../perf/
+	PATH_SUFFIXES build
+)
 
-add_executable(sum sum.cpp ../perf/jitdump.cpp)
-target_link_libraries(sum ${ASMJIT_LIBRARIES})
+add_executable(sum sum.cpp)
+target_link_libraries(sum ${ASMJIT_LIBRARIES} ${ASMJIT_PERF_LIBRARIES})
 
-add_executable(sumCompiler sumCompiler.cpp ../perf/jitdump.cpp)
-target_link_libraries(sumCompiler ${ASMJIT_LIBRARIES})
+add_executable(sumCompiler sumCompiler.cpp)
+target_link_libraries(sumCompiler ${ASMJIT_LIBRARIES} ${ASMJIT_PERF_LIBRARIES})
