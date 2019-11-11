@@ -2,14 +2,8 @@
 
 #include <asmjit/x86/x86assembler.h>
 
+#include "jitdump.h"
 
-PerfCompiler::PerfCompiler(asmjit::CodeHolder *code) noexcept : asmjit::x86::Compiler(code) {
-	jd.init();
-}
-
-PerfCompiler::~PerfCompiler(){
-	jd.close();
-}
 
 // implicitly attached to latest node
 void PerfCompiler::attachDebugLine(const char *file_name, int line_number){
@@ -18,11 +12,7 @@ void PerfCompiler::attachDebugLine(const char *file_name, int line_number){
 	cursor()->setUserDataAsUInt64(debugLines.size());
 }
 
-void PerfCompiler::addCodeSegment(const char *fn_name, void *fn, uint64_t code_size){
-	jd.addCodeSegment(fn_name, fn, code_size);
-}
-
-asmjit::Error PerfCompiler::finalize(){
+asmjit::Error PerfCompiler::finalize(JitDump &jd){
 	asmjit::Error err = runPasses();
 	if(err) return err;
 	

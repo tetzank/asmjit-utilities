@@ -19,6 +19,8 @@ int main(){
 
 	// init asmjit
 	asmjit::JitRuntime rt;
+	JitDump jd;
+	jd.init();
 
 	asmjit::CodeHolder code;
 	code.init(rt.codeInfo());
@@ -56,7 +58,7 @@ int main(){
 
 	cc.endFunc();
 
-	cc.finalize();
+	cc.finalize(jd);
 
 
 	SumFunc fn;
@@ -66,7 +68,7 @@ int main(){
 		std::exit(1);
 	}
 
-	cc.addCodeSegment("foo", (void*)fn, code.codeSize());
+	jd.addCodeSegment("foo", (void*)fn, code.codeSize());
 
 	// generate some data
 	std::vector<int> data(1 << 25);
@@ -75,6 +77,7 @@ int main(){
 	int result = fn(data.data(), data.size());
 	printf("%d\n", result);
 
+	jd.close();
 	rt.release(fn);
 
 	return 0;

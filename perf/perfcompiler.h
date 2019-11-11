@@ -4,8 +4,9 @@
 #include <vector>
 
 #include <asmjit/x86/x86compiler.h>
-#include "jitdump.h"
 
+// just forward declare, no need for full header
+class JitDump;
 
 class PerfCompiler : public asmjit::x86::Compiler {
 private:
@@ -17,22 +18,18 @@ private:
 	};
 	std::vector<DebugLine> debugLines;
 
-	JitDump jd;
-
 public:
-	explicit PerfCompiler(asmjit::CodeHolder *code=nullptr) noexcept;
-	virtual ~PerfCompiler();
+	explicit PerfCompiler(asmjit::CodeHolder *code=nullptr) noexcept : asmjit::x86::Compiler(code) {}
+	virtual ~PerfCompiler() {}
 
 	// implicitly attached to latest node
 	// adds file and line number as debug info to last created node (Compiler::cursor())
 	void attachDebugLine(const char *file_name=__builtin_FILE(), int line_number=__builtin_LINE());
 
-	// add code of function to dump file
-	void addCodeSegment(const char *fn_name, void *fn, uint64_t code_size);
-
 	// serialize sequence of nodes to machine code with Assembler
 	// additionally get offset of instruction and store it to debug information
-	asmjit::Error finalize();
+	// all debug info is stored in the passed JitDump object
+	asmjit::Error finalize(JitDump &jd);
 };
 
 #endif
