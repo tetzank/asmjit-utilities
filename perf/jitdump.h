@@ -71,7 +71,7 @@ struct record_load{
 };
 
 struct record_debug{
-	// address of function for which debug info in provided
+	// address of function for which debug info is provided
 	uint64_t code_addr;
 	// number of debug entries
 	uint64_t nr_entry;

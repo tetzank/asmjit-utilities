@@ -18,15 +18,22 @@ Usage in application, see examples/sum.cpp:
 - call `close()` at the end
 
 Profiling steps:
-- `perf record -k 1 ./application`
-- `perf inject -j -i perf.data -o perf.data.jitted`
-- `perf report -i perf.data.jitted`
+1. `perf record -k 1 ./application`
+2. `perf inject -j -i perf.data -o perf.data.jitted`
+3. `perf report -i perf.data.jitted`
 
 In `perf report` the generated function should appear with the associated name.
 The annotated view can be reached by pressing 'a'.
 
 
-## Debugging with GDB on linux
+### Structure definition of dump file for Okteta
+
+For debugging purposes, there is a structure definition of the binary jitdump file in perf/jitdump-structure.
+The hex editor `okteta` can load this definition and display all records in the dump file in a nice tree structure.
+Copy the subdirectory perf/jitdump-structure to ~/.local/share/okteta/structures/ and enable it in the settings screen of the structures panel.
+
+
+## Debugging with GDB on Linux
 
 The debugging capabilities of GDB for jit compiled code is very limited currently as asmjit does not generate normal object files.
 You only get debugging on assembly level within TUI mode of GDB (disassemble command does not work).

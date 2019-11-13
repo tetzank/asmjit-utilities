@@ -1,0 +1,17 @@
+[Desktop Entry]
+Encoding=UTF-8
+Icon=application-x-executable
+Type=Service
+ServiceTypes=KPluginInfo
+
+Name=JitDump Structure
+Comment=Structure of the JitDump format for perf
+
+X-KDE-PluginInfo-Author=tetzank
+X-KDE-PluginInfo-Email=tetzank@users.sourceforge.net
+X-KDE-PluginInfo-Name=jitdump
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-Website=https://github.com/tetzank/asmjit-utilities
+X-KDE-PluginInfo-Category=structure/js
+X-KDE-PluginInfo-License=MIT
+X-KDE-PluginInfo-EnabledByDefault=false
