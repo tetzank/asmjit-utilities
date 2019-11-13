@@ -65,7 +65,9 @@ void JitDump::addCodeSegment(const char *fn_name, void *fn, uint64_t code_size){
 		for(const auto &e : debugEntries){
 			totalSize += uint32_t(sizeof(debug_entry) + strlen(e.file) + 1);
 		}
+#ifndef NDEBUG
 		printf("total debug size: %u (0x%x)\n", totalSize, totalSize);
+#endif
 
 		record_header rh;
 		rh.id = JIT_CODE_DEBUG_INFO;

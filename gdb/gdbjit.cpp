@@ -41,8 +41,10 @@ struct jit_descriptor __jit_debug_descriptor = { 1, 0, 0, 0 };
 
 
 void GDBJit::addCodeSegment(const char *name, uint64_t addr, uint64_t size){
+#ifndef NDEBUG
 	puts("register_code called");
 	printf("name: %s; addr: %lu; size: %lu\n", name, addr, size);
+#endif
 
 	uint64_t name_size = strlen(name)+1; // including null terminator
 	uint64_t symfile_size = name_size + 2*sizeof(uint64_t);
