@@ -23,7 +23,7 @@ function init(){
 		code_addr : uint64(),
 		line      : uint32(),
 		discrim   : uint32(),
-		name      : string("ascii")
+		name      : string("ascii").set({terminatedBy : 0})
 	});
 	debug_entry.name = "debug_entry";
 
@@ -36,7 +36,7 @@ function init(){
 		[ // alternatives depending on record type marked in id
 			alternative(
 				// selectIf
-				function(){ return this.id.value == record_type.JIT_CODE_LOAD; },
+				function(){ return this.wasAbleToRead && this.id.value == record_type.JIT_CODE_LOAD; },
 				{
 					pid           : uint32(),
 					tid           : uint32(),
@@ -44,14 +44,14 @@ function init(){
 					code_addr     : uint64(),
 					code_size     : uint64(),
 					code_index    : uint64(),
-					function_name : string("ascii"),
+					function_name : string("ascii").set({terminatedBy : 0}),
 					native_code   : array(uint8(), function(){ return this.parent.code_size.value; })
 				},
 				"record_load"
 			),
 			alternative(
 				// selectIf
-				function(){ return this.id.value == record_type.JIT_CODE_DEBUG_INFO; },
+				function(){ return this.wasAbleToRead && this.id.value == record_type.JIT_CODE_DEBUG_INFO; },
 				{
 					code_addr : uint64(),
 					nr_entry  : uint64(),
@@ -68,6 +68,7 @@ function init(){
 		header  : file_header,
 		records : array(record, 100) //FIXME: size hardcoded, no length in format, read until EOF
 	});
+	jitdump.defaultLockOffset = 0;
 
 	return jitdump;
 }
