@@ -6,13 +6,11 @@
 #include "gdbjit.h"
 
 
-extern "C" {
-
-typedef enum {
+enum jit_actions : uint32_t {
 	JIT_NOACTION = 0,
 	JIT_REGISTER_FN,
 	JIT_UNREGISTER_FN,
-} jit_actions_t;
+};
 
 struct jit_code_entry {
 	struct jit_code_entry *next_entry;
@@ -23,19 +21,20 @@ struct jit_code_entry {
 
 struct jit_descriptor {
 	uint32_t version;
-	// This type should be jit_actions_t, but we use uint32_t
-	// to be explicit about the bitwidth.
-	uint32_t action_flag;
+	jit_actions action_flag;
 	struct jit_code_entry *relevant_entry;
 	struct jit_code_entry *first_entry;
 };
+
+
+extern "C" {
 
 // GDB puts a breakpoint in this function.
 void __attribute__((noinline)) __jit_debug_register_code() {}
 
 // Make sure to specify the version statically, because the
 // debugger may check the version before we can set it.
-struct jit_descriptor __jit_debug_descriptor = { 1, 0, 0, 0 };
+struct jit_descriptor __jit_debug_descriptor = { 1, JIT_NOACTION, NULL, NULL };
 
 } // extern "C"
 
