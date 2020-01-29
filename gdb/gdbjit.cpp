@@ -60,7 +60,7 @@ void GDBJit::addCodeSegment(const char *name, uint64_t addr, uint64_t size){
 	(void)memcpy(ptr, name, name_size);
 
 	// create entry
-	jit_code_entry *n = new jit_code_entry; //FIXME: memory leak currently
+	jit_code_entry *n = new jit_code_entry;
 	n->next_entry = nullptr;
 	n->prev_entry = nullptr;
 	n->symfile_addr = symfile;
@@ -78,4 +78,7 @@ void GDBJit::addCodeSegment(const char *name, uint64_t addr, uint64_t size){
 
 	puts("calling GDB");
 	__jit_debug_register_code();
+
+	free(symfile);
+	delete n;
 }
