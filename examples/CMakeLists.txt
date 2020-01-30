@@ -23,8 +23,11 @@ find_library(ASMJIT_PERF_LIBRARIES
 	PATH_SUFFIXES build
 )
 
-add_executable(sum sum.cpp)
+add_executable(sum sum.cpp ../gdb/gdbjit.cpp)
 target_link_libraries(sum ${ASMJIT_LIBRARIES} ${ASMJIT_PERF_LIBRARIES})
 
 add_executable(sumCompiler sumCompiler.cpp)
 target_link_libraries(sumCompiler ${ASMJIT_LIBRARIES} ${ASMJIT_PERF_LIBRARIES})
+
+add_executable(sumSplit sumSplit.cpp sumSplit2.cpp ../gdb/gdbjit.cpp)
+target_link_libraries(sumSplit ${ASMJIT_LIBRARIES} ${ASMJIT_PERF_LIBRARIES})

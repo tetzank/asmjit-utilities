@@ -16,6 +16,8 @@
 //
 // look for the function "foo" and press "a" to view annotated assembly
 
+extern void loop(asmjit::x86::Assembler *);
+
 int main(){
 	// function signature
 	using SumFunc = int (*)(const int *arr, size_t cnt);
@@ -33,7 +35,6 @@ int main(){
 
 	// assemble function
 	// arr - rdi, cnt - rsi
-	asmjit::Label l_loop = a.newLabel();
 	asmjit::Label l_exit = a.newLabel();
 
 	// macro for abbreviation, adds debug info for each instruction
@@ -43,11 +44,7 @@ int main(){
 	DL; a.test(asmjit::x86::rsi, asmjit::x86::rsi);                        // if(cnt == 0)
 	DL; a.jz(l_exit);                                                      //     goto exit
 
-	a.bind(l_loop);                                                        // loop head
-	DL; a.add(asmjit::x86::eax, asmjit::x86::dword_ptr(asmjit::x86::rdi)); // sum += *arr
-	DL; a.add(asmjit::x86::rdi, sizeof(int));                              // arr++
-	DL; a.dec(asmjit::x86::rsi);                                           // cnt--, sets zero flag
-	DL; a.jnz(l_loop);                                                     // goto loop if not zero
+	loop(&a);
 
 	a.bind(l_exit);
 	DL; a.ret();                                                           // return sum
@@ -63,7 +60,7 @@ int main(){
 	GDBJit::addCodeSegment("foo", (uint64_t)(void*)fn, code.codeSize());
 
 	// generate some data
-	std::vector<int> data(1 << 25);
+	std::vector<int> data(3/*1 << 25*/);
 	std::iota(data.begin(), data.end(), 0);
 	// execute
 	const int *d = data.data();
